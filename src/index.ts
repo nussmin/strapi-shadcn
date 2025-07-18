@@ -16,5 +16,21 @@ export default {
    * This gives you an opportunity to set up your data model,
    * run jobs, or perform some special logic.
    */
-  bootstrap(/* { strapi }: { strapi: Core.Strapi } */) {},
+  bootstrap({ strapi }) {
+    strapi.server.use(async (ctx, next) => {
+      /* Skip admin routes
+      if (ctx.request.url.startsWith("/admin")) {
+        return await next();
+      } */
+
+      console.log("=== Incoming Request ===");
+      console.log("Method:", ctx.request.method);
+      console.log("URL:", ctx.request.url);
+      console.log("Headers:", ctx.request.headers);
+      console.log("Cookies:", ctx.request.headers.cookie);
+      console.log("=====================");
+
+      await next();
+    });
+  },
 };

@@ -25,6 +25,34 @@ From the GitHub source (https://github.com/strapi/strapi), focus on these key ar
 2. http-only cookie - plugin "https://market.strapi.io/plugins/strapi-v5-http-only-auth"
 
 
+## What needs to be change for the Bulletproof React and Strappi onboarding 
+
+Summary of Changes
+## Summary of Changes
+
+| Endpoint | Bulletproof React | Strapi Equivalent | Change Required |
+|----------|------------------|-------------------|-----------------|
+| Login | `POST /auth/login` | `POST /auth/local` | ✅ **No change** (plugin maps this) |
+| Register | `POST /auth/register` | `POST /auth/local/register` | ✅ **No change** (plugin maps this) |
+| Get User | `GET /auth/me` | `GET /users/me` | ❌ **Update path** |
+| Logout | `POST /auth/logout` | `DELETE /auth/logout` | ❌ **Update method** |
+
+
+## Key Benefits
+✅ Security: HTTP-only cookies protect against XSS attacks
+✅ Simplicity: No manual JWT token management required
+✅ Compatibility: Minimal changes to existing Bulletproof React code
+✅ Production Ready: Secure cookie configuration for different environments
+
+## Environment Variables
+Make sure to set these in your environment:
+-  env# Strapi
+- CLIENT_DOMAIN=your-frontend-domain.com
+- NODE_ENV=production
+
+# React
+- VITE_API_URL=http://your-strapi-server:1337/api
+
 
 # 🚀 Getting started with Strapi
 

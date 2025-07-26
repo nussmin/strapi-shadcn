@@ -38,6 +38,82 @@ Summary of Changes
 | Logout | `POST /auth/logout` | `DELETE /auth/logout` | ❌ **Update method** |
 
 
+## Swagger - Strapi Plugin
+
+```bash
+# url: http://localhost:1337/documentation
+
+```
+
+## Extensions 
+
+```bash
+# User + Permissions 
+# https://docs.strapi.io/cms/plugins-development/plugins-extension
+
+{"text" : "A plugin's Content-Types can be extended in 2 ways: using the programmatic interface within strapi-server.js|ts and by overriding the content-types schemas.
+
+The final schema of the content-types depends on the following loading order:
+1. the content-types of the original plugin,
+2 .the content-types overridden by the declarations in the schema defined in ./src/extensions/plugin-name/content-types/content-type-name/schema.json
+3. the content-types declarations in the content-types key exported from strapi-server.js|ts
+4. the content-types declarations in the register() function of the Strapi application
+To overwrite a plugin's content-types:
+
+(optional) Create the ./src/extensions folder at the root of the app, if the folder does not already exist.
+Create a subfolder with the same name as the plugin to be extended.
+Create a content-types subfolder.
+Inside the content-types subfolder, create another subfolder with the same singularName as the content-type to overwrite.
+Inside this content-types/name-of-content-type subfolder, define the new schema for the content-type in a schema.json file (see schema documentation).
+(optional) Repeat steps 4 and 5 for each content-type to overwrite.
+```
+
+## Make your own plugin 
+
+```bash 
+# https://github.com/strapi/sdk-plugin
+# https://github.com/PaulBratslavsky/strapi-plugin-yt-clips
+
+npx @strapi/sdk-plugin@latest init my-plugin
+
+```
+
+## Creating the comments api route
+
+```bash
+# 1. Generate the comments content type
+npx strapi generate
+
+# choose content-types it will populate this and rest of controller, service etc..
+src/api/comment/content-types/comment/schema.json
+
+# after this, please update the type definition of the new content-types if not vscode will complain 
+npx strapi ts:generate-types # types/generated 
+
+# to check everything is good 
+npx strapi content-types:list
+
+# when mapping relations, remember to check if want the relationship to be bidirectional, if yes you need to add to both side of the model 
+
+# in discussion schema.json 
+"author": {
+  "type": "relation",
+  "relation": "many-to-one",
+  "target": "plugin::users-permissions.user",
+  "inversedBy": "discussions"
+}
+
+# in plugin user-permission extension  / strapi-server.ts 
+"discussions": {
+  "type": "relation",
+  "relation": "one-to-many",
+  "target": "api::discussion.discussion",
+  "mappedBy": "author"
+}
+
+```
+
+
 ## Key Benefits
 ✅ Security: HTTP-only cookies protect against XSS attacks
 ✅ Simplicity: No manual JWT token management required

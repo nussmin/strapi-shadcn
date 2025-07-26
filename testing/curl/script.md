@@ -10,6 +10,10 @@ curl -i -X POST http://localhost:1337/api/auth/local \
   -c cookiejar.txt
 
 cat cookiejar.txt 
+
+# test response
+curl -b cookiejar.txt http://localhost:1337/api/users/me | jq
+
 # Expected content. note the domain should only contain 'localhost or somewebsite.com'
 # Netscape HTTP Cookie File
 # https://curl.se/docs/http-cookies.html
@@ -18,5 +22,10 @@ cat cookiejar.txt
 #HttpOnly_.localhost    TRUE    /       FALSE   1755094557      Auth.sig        lrzC0ZMnXcr5VhSPGTcPMLe9TnQ
 #HttpOnly_.localhost    TRUE    /       FALSE   1755094557      Auth    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzUyNTAyNTU3LCJleHAiOjE3NTUwOTQ1NTd9.fbpBLUTyn9gjbhpyS1WycsbLi8D3VKsU2TMZjP7XA0A
 
+
+# to reterieve data after authenticated 
+curl -i -X GET http://localhost:1337/api/users/me \
+  -b cookiejar.txt \
+  -H "Content-Type: application/json"
 ```
 

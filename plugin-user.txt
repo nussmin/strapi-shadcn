@@ -1,0 +1,820 @@
+.
+├── LICENSE
+├── README.md
+├── admin
+│   └── src
+│       ├── components
+│       │   ├── BoundRoute
+│       │   │   ├── getMethodColor.js
+│       │   │   └── index.jsx
+│       │   ├── FormModal
+│       │   │   ├── Input
+│       │   │   │   └── index.jsx
+│       │   │   └── index.jsx
+│       │   ├── Permissions
+│       │   │   ├── PermissionRow
+│       │   │   │   ├── CheckboxWrapper.jsx
+│       │   │   │   ├── SubCategory.jsx
+│       │   │   │   └── index.jsx
+│       │   │   ├── index.jsx
+│       │   │   ├── init.js
+│       │   │   └── reducer.js
+│       │   ├── Policies
+│       │   │   └── index.jsx
+│       │   └── UsersPermissions
+│       │       ├── index.jsx
+│       │       ├── init.js
+│       │       └── reducer.js
+│       ├── constants.js
+│       ├── contexts
+│       │   └── UsersPermissionsContext
+│       │       └── index.jsx
+│       ├── index.js
+│       ├── pages
+│       │   ├── AdvancedSettings
+│       │   │   ├── index.jsx
+│       │   │   └── utils
+│       │   │       ├── layout.js
+│       │   │       └── schema.js
+│       │   ├── EmailTemplates
+│       │   │   ├── components
+│       │   │   │   ├── EmailForm.jsx
+│       │   │   │   └── EmailTable.jsx
+│       │   │   ├── index.jsx
+│       │   │   └── utils
+│       │   │       └── schema.js
+│       │   ├── Providers
+│       │   │   ├── index.jsx
+│       │   │   └── utils
+│       │   │       └── forms.js
+│       │   └── Roles
+│       │       ├── constants.js
+│       │       ├── hooks
+│       │       │   └── usePlugins.js
+│       │       ├── index.jsx
+│       │       └── pages
+│       │           ├── CreatePage.jsx
+│       │           ├── EditPage.jsx
+│       │           └── ListPage
+│       │               ├── components
+│       │               │   └── TableBody.jsx
+│       │               └── index.jsx
+│       ├── pluginId.js
+│       ├── translations
+│       │   ├── ar.json
+│       │   ├── cs.json
+│       │   ├── de.json
+│       │   ├── dk.json
+│       │   ├── en.json
+│       │   ├── es.json
+│       │   ├── fr.json
+│       │   ├── id.json
+│       │   ├── it.json
+│       │   ├── ja.json
+│       │   ├── ko.json
+│       │   ├── ms.json
+│       │   ├── nl.json
+│       │   ├── pl.json
+│       │   ├── pt-BR.json
+│       │   ├── pt.json
+│       │   ├── ru.json
+│       │   ├── sk.json
+│       │   ├── sv.json
+│       │   ├── th.json
+│       │   ├── tr.json
+│       │   ├── uk.json
+│       │   ├── vi.json
+│       │   ├── zh-Hans.json
+│       │   └── zh.json
+│       └── utils
+│           ├── cleanPermissions.js
+│           ├── formatPluginName.js
+│           ├── formatPolicies.js
+│           ├── getTrad.js
+│           ├── index.js
+│           └── prefixPluginTranslations.js
+├── dist
+│   ├── admin
+│   │   ├── components
+│   │   │   ├── BoundRoute
+│   │   │   │   ├── getMethodColor.js
+│   │   │   │   ├── getMethodColor.js.map
+│   │   │   │   ├── getMethodColor.mjs
+│   │   │   │   ├── getMethodColor.mjs.map
+│   │   │   │   ├── index.js
+│   │   │   │   ├── index.js.map
+│   │   │   │   ├── index.mjs
+│   │   │   │   └── index.mjs.map
+│   │   │   ├── FormModal
+│   │   │   │   ├── Input
+│   │   │   │   │   ├── index.js
+│   │   │   │   │   ├── index.js.map
+│   │   │   │   │   ├── index.mjs
+│   │   │   │   │   └── index.mjs.map
+│   │   │   │   ├── index.js
+│   │   │   │   ├── index.js.map
+│   │   │   │   ├── index.mjs
+│   │   │   │   └── index.mjs.map
+│   │   │   ├── Permissions
+│   │   │   │   ├── PermissionRow
+│   │   │   │   │   ├── CheckboxWrapper.js
+│   │   │   │   │   ├── CheckboxWrapper.js.map
+│   │   │   │   │   ├── CheckboxWrapper.mjs
+│   │   │   │   │   ├── CheckboxWrapper.mjs.map
+│   │   │   │   │   ├── SubCategory.js
+│   │   │   │   │   ├── SubCategory.js.map
+│   │   │   │   │   ├── SubCategory.mjs
+│   │   │   │   │   ├── SubCategory.mjs.map
+│   │   │   │   │   ├── index.js
+│   │   │   │   │   ├── index.js.map
+│   │   │   │   │   ├── index.mjs
+│   │   │   │   │   └── index.mjs.map
+│   │   │   │   ├── index.js
+│   │   │   │   ├── index.js.map
+│   │   │   │   ├── index.mjs
+│   │   │   │   ├── index.mjs.map
+│   │   │   │   ├── init.js
+│   │   │   │   ├── init.js.map
+│   │   │   │   ├── init.mjs
+│   │   │   │   ├── init.mjs.map
+│   │   │   │   ├── reducer.js
+│   │   │   │   ├── reducer.js.map
+│   │   │   │   ├── reducer.mjs
+│   │   │   │   └── reducer.mjs.map
+│   │   │   ├── Policies
+│   │   │   │   ├── index.js
+│   │   │   │   ├── index.js.map
+│   │   │   │   ├── index.mjs
+│   │   │   │   └── index.mjs.map
+│   │   │   └── UsersPermissions
+│   │   │       ├── index.js
+│   │   │       ├── index.js.map
+│   │   │       ├── index.mjs
+│   │   │       ├── index.mjs.map
+│   │   │       ├── init.js
+│   │   │       ├── init.js.map
+│   │   │       ├── init.mjs
+│   │   │       ├── init.mjs.map
+│   │   │       ├── reducer.js
+│   │   │       ├── reducer.js.map
+│   │   │       ├── reducer.mjs
+│   │   │       └── reducer.mjs.map
+│   │   ├── constants.js
+│   │   ├── constants.js.map
+│   │   ├── constants.mjs
+│   │   ├── constants.mjs.map
+│   │   ├── contexts
+│   │   │   └── UsersPermissionsContext
+│   │   │       ├── index.js
+│   │   │       ├── index.js.map
+│   │   │       ├── index.mjs
+│   │   │       └── index.mjs.map
+│   │   ├── index.js
+│   │   ├── index.js.map
+│   │   ├── index.mjs
+│   │   ├── index.mjs.map
+│   │   ├── package.json.js
+│   │   ├── package.json.js.map
+│   │   ├── package.json.mjs
+│   │   ├── package.json.mjs.map
+│   │   ├── pages
+│   │   │   ├── AdvancedSettings
+│   │   │   │   ├── index.js
+│   │   │   │   ├── index.js.map
+│   │   │   │   ├── index.mjs
+│   │   │   │   ├── index.mjs.map
+│   │   │   │   └── utils
+│   │   │   │       ├── layout.js
+│   │   │   │       ├── layout.js.map
+│   │   │   │       ├── layout.mjs
+│   │   │   │       ├── layout.mjs.map
+│   │   │   │       ├── schema.js
+│   │   │   │       ├── schema.js.map
+│   │   │   │       ├── schema.mjs
+│   │   │   │       └── schema.mjs.map
+│   │   │   ├── EmailTemplates
+│   │   │   │   ├── components
+│   │   │   │   │   ├── EmailForm.js
+│   │   │   │   │   ├── EmailForm.js.map
+│   │   │   │   │   ├── EmailForm.mjs
+│   │   │   │   │   ├── EmailForm.mjs.map
+│   │   │   │   │   ├── EmailTable.js
+│   │   │   │   │   ├── EmailTable.js.map
+│   │   │   │   │   ├── EmailTable.mjs
+│   │   │   │   │   └── EmailTable.mjs.map
+│   │   │   │   ├── index.js
+│   │   │   │   ├── index.js.map
+│   │   │   │   ├── index.mjs
+│   │   │   │   ├── index.mjs.map
+│   │   │   │   └── utils
+│   │   │   │       ├── schema.js
+│   │   │   │       ├── schema.js.map
+│   │   │   │       ├── schema.mjs
+│   │   │   │       └── schema.mjs.map
+│   │   │   ├── Providers
+│   │   │   │   ├── index.js
+│   │   │   │   ├── index.js.map
+│   │   │   │   ├── index.mjs
+│   │   │   │   ├── index.mjs.map
+│   │   │   │   └── utils
+│   │   │   │       ├── forms.js
+│   │   │   │       ├── forms.js.map
+│   │   │   │       ├── forms.mjs
+│   │   │   │       └── forms.mjs.map
+│   │   │   └── Roles
+│   │   │       ├── constants.js
+│   │   │       ├── constants.js.map
+│   │   │       ├── constants.mjs
+│   │   │       ├── constants.mjs.map
+│   │   │       ├── hooks
+│   │   │       │   ├── usePlugins.js
+│   │   │       │   ├── usePlugins.js.map
+│   │   │       │   ├── usePlugins.mjs
+│   │   │       │   └── usePlugins.mjs.map
+│   │   │       ├── index.js
+│   │   │       ├── index.js.map
+│   │   │       ├── index.mjs
+│   │   │       ├── index.mjs.map
+│   │   │       └── pages
+│   │   │           ├── CreatePage.js
+│   │   │           ├── CreatePage.js.map
+│   │   │           ├── CreatePage.mjs
+│   │   │           ├── CreatePage.mjs.map
+│   │   │           ├── EditPage.js
+│   │   │           ├── EditPage.js.map
+│   │   │           ├── EditPage.mjs
+│   │   │           ├── EditPage.mjs.map
+│   │   │           └── ListPage
+│   │   │               ├── components
+│   │   │               │   ├── TableBody.js
+│   │   │               │   ├── TableBody.js.map
+│   │   │               │   ├── TableBody.mjs
+│   │   │               │   └── TableBody.mjs.map
+│   │   │               ├── index.js
+│   │   │               ├── index.js.map
+│   │   │               ├── index.mjs
+│   │   │               └── index.mjs.map
+│   │   ├── pluginId.js
+│   │   ├── pluginId.js.map
+│   │   ├── pluginId.mjs
+│   │   ├── pluginId.mjs.map
+│   │   ├── translations
+│   │   │   ├── ar.json.js
+│   │   │   ├── ar.json.js.map
+│   │   │   ├── ar.json.mjs
+│   │   │   ├── ar.json.mjs.map
+│   │   │   ├── cs.json.js
+│   │   │   ├── cs.json.js.map
+│   │   │   ├── cs.json.mjs
+│   │   │   ├── cs.json.mjs.map
+│   │   │   ├── de.json.js
+│   │   │   ├── de.json.js.map
+│   │   │   ├── de.json.mjs
+│   │   │   ├── de.json.mjs.map
+│   │   │   ├── dk.json.js
+│   │   │   ├── dk.json.js.map
+│   │   │   ├── dk.json.mjs
+│   │   │   ├── dk.json.mjs.map
+│   │   │   ├── en.json.js
+│   │   │   ├── en.json.js.map
+│   │   │   ├── en.json.mjs
+│   │   │   ├── en.json.mjs.map
+│   │   │   ├── es.json.js
+│   │   │   ├── es.json.js.map
+│   │   │   ├── es.json.mjs
+│   │   │   ├── es.json.mjs.map
+│   │   │   ├── fr.json.js
+│   │   │   ├── fr.json.js.map
+│   │   │   ├── fr.json.mjs
+│   │   │   ├── fr.json.mjs.map
+│   │   │   ├── id.json.js
+│   │   │   ├── id.json.js.map
+│   │   │   ├── id.json.mjs
+│   │   │   ├── id.json.mjs.map
+│   │   │   ├── it.json.js
+│   │   │   ├── it.json.js.map
+│   │   │   ├── it.json.mjs
+│   │   │   ├── it.json.mjs.map
+│   │   │   ├── ja.json.js
+│   │   │   ├── ja.json.js.map
+│   │   │   ├── ja.json.mjs
+│   │   │   ├── ja.json.mjs.map
+│   │   │   ├── ko.json.js
+│   │   │   ├── ko.json.js.map
+│   │   │   ├── ko.json.mjs
+│   │   │   ├── ko.json.mjs.map
+│   │   │   ├── ms.json.js
+│   │   │   ├── ms.json.js.map
+│   │   │   ├── ms.json.mjs
+│   │   │   ├── ms.json.mjs.map
+│   │   │   ├── nl.json.js
+│   │   │   ├── nl.json.js.map
+│   │   │   ├── nl.json.mjs
+│   │   │   ├── nl.json.mjs.map
+│   │   │   ├── pl.json.js
+│   │   │   ├── pl.json.js.map
+│   │   │   ├── pl.json.mjs
+│   │   │   ├── pl.json.mjs.map
+│   │   │   ├── pt-BR.json.js
+│   │   │   ├── pt-BR.json.js.map
+│   │   │   ├── pt-BR.json.mjs
+│   │   │   ├── pt-BR.json.mjs.map
+│   │   │   ├── pt.json.js
+│   │   │   ├── pt.json.js.map
+│   │   │   ├── pt.json.mjs
+│   │   │   ├── pt.json.mjs.map
+│   │   │   ├── ru.json.js
+│   │   │   ├── ru.json.js.map
+│   │   │   ├── ru.json.mjs
+│   │   │   ├── ru.json.mjs.map
+│   │   │   ├── sk.json.js
+│   │   │   ├── sk.json.js.map
+│   │   │   ├── sk.json.mjs
+│   │   │   ├── sk.json.mjs.map
+│   │   │   ├── sv.json.js
+│   │   │   ├── sv.json.js.map
+│   │   │   ├── sv.json.mjs
+│   │   │   ├── sv.json.mjs.map
+│   │   │   ├── th.json.js
+│   │   │   ├── th.json.js.map
+│   │   │   ├── th.json.mjs
+│   │   │   ├── th.json.mjs.map
+│   │   │   ├── tr.json.js
+│   │   │   ├── tr.json.js.map
+│   │   │   ├── tr.json.mjs
+│   │   │   ├── tr.json.mjs.map
+│   │   │   ├── uk.json.js
+│   │   │   ├── uk.json.js.map
+│   │   │   ├── uk.json.mjs
+│   │   │   ├── uk.json.mjs.map
+│   │   │   ├── vi.json.js
+│   │   │   ├── vi.json.js.map
+│   │   │   ├── vi.json.mjs
+│   │   │   ├── vi.json.mjs.map
+│   │   │   ├── zh-Hans.json.js
+│   │   │   ├── zh-Hans.json.js.map
+│   │   │   ├── zh-Hans.json.mjs
+│   │   │   ├── zh-Hans.json.mjs.map
+│   │   │   ├── zh.json.js
+│   │   │   ├── zh.json.js.map
+│   │   │   ├── zh.json.mjs
+│   │   │   └── zh.json.mjs.map
+│   │   └── utils
+│   │       ├── cleanPermissions.js
+│   │       ├── cleanPermissions.js.map
+│   │       ├── cleanPermissions.mjs
+│   │       ├── cleanPermissions.mjs.map
+│   │       ├── formatPluginName.js
+│   │       ├── formatPluginName.js.map
+│   │       ├── formatPluginName.mjs
+│   │       ├── formatPluginName.mjs.map
+│   │       ├── getTrad.js
+│   │       ├── getTrad.js.map
+│   │       ├── getTrad.mjs
+│   │       ├── getTrad.mjs.map
+│   │       ├── prefixPluginTranslations.js
+│   │       ├── prefixPluginTranslations.js.map
+│   │       ├── prefixPluginTranslations.mjs
+│   │       └── prefixPluginTranslations.mjs.map
+│   └── server
+│       ├── _virtual
+│       │   ├── _commonjsHelpers.js
+│       │   ├── _commonjsHelpers.js.map
+│       │   ├── _commonjsHelpers.mjs
+│       │   └── _commonjsHelpers.mjs.map
+│       ├── bootstrap
+│       │   ├── index.js
+│       │   ├── index.js.map
+│       │   ├── index.mjs
+│       │   ├── index.mjs.map
+│       │   ├── users-permissions-actions.js
+│       │   ├── users-permissions-actions.js.map
+│       │   ├── users-permissions-actions.mjs
+│       │   └── users-permissions-actions.mjs.map
+│       ├── config.js
+│       ├── config.js.map
+│       ├── config.mjs
+│       ├── config.mjs.map
+│       ├── content-types
+│       │   ├── index.js
+│       │   ├── index.js.map
+│       │   ├── index.mjs
+│       │   ├── index.mjs.map
+│       │   ├── permission
+│       │   │   ├── index.js
+│       │   │   ├── index.js.map
+│       │   │   ├── index.mjs
+│       │   │   └── index.mjs.map
+│       │   ├── role
+│       │   │   ├── index.js
+│       │   │   ├── index.js.map
+│       │   │   ├── index.mjs
+│       │   │   └── index.mjs.map
+│       │   └── user
+│       │       ├── index.js
+│       │       ├── index.js.map
+│       │       ├── index.mjs
+│       │       ├── index.mjs.map
+│       │       ├── schema-config.js
+│       │       ├── schema-config.js.map
+│       │       ├── schema-config.mjs
+│       │       └── schema-config.mjs.map
+│       ├── controllers
+│       │   ├── auth.js
+│       │   ├── auth.js.map
+│       │   ├── auth.mjs
+│       │   ├── auth.mjs.map
+│       │   ├── content-manager-user.js
+│       │   ├── content-manager-user.js.map
+│       │   ├── content-manager-user.mjs
+│       │   ├── content-manager-user.mjs.map
+│       │   ├── index.js
+│       │   ├── index.js.map
+│       │   ├── index.mjs
+│       │   ├── index.mjs.map
+│       │   ├── permissions.js
+│       │   ├── permissions.js.map
+│       │   ├── permissions.mjs
+│       │   ├── permissions.mjs.map
+│       │   ├── role.js
+│       │   ├── role.js.map
+│       │   ├── role.mjs
+│       │   ├── role.mjs.map
+│       │   ├── settings.js
+│       │   ├── settings.js.map
+│       │   ├── settings.mjs
+│       │   ├── settings.mjs.map
+│       │   ├── user.js
+│       │   ├── user.js.map
+│       │   ├── user.mjs
+│       │   ├── user.mjs.map
+│       │   └── validation
+│       │       ├── auth.js
+│       │       ├── auth.js.map
+│       │       ├── auth.mjs
+│       │       ├── auth.mjs.map
+│       │       ├── email-template.js
+│       │       ├── email-template.js.map
+│       │       ├── email-template.mjs
+│       │       ├── email-template.mjs.map
+│       │       ├── user.js
+│       │       ├── user.js.map
+│       │       ├── user.mjs
+│       │       └── user.mjs.map
+│       ├── graphql
+│       │   ├── index.js
+│       │   ├── index.js.map
+│       │   ├── index.mjs
+│       │   ├── index.mjs.map
+│       │   ├── mutations
+│       │   │   ├── auth
+│       │   │   │   ├── change-password.js
+│       │   │   │   ├── change-password.js.map
+│       │   │   │   ├── change-password.mjs
+│       │   │   │   ├── change-password.mjs.map
+│       │   │   │   ├── email-confirmation.js
+│       │   │   │   ├── email-confirmation.js.map
+│       │   │   │   ├── email-confirmation.mjs
+│       │   │   │   ├── email-confirmation.mjs.map
+│       │   │   │   ├── forgot-password.js
+│       │   │   │   ├── forgot-password.js.map
+│       │   │   │   ├── forgot-password.mjs
+│       │   │   │   ├── forgot-password.mjs.map
+│       │   │   │   ├── login.js
+│       │   │   │   ├── login.js.map
+│       │   │   │   ├── login.mjs
+│       │   │   │   ├── login.mjs.map
+│       │   │   │   ├── register.js
+│       │   │   │   ├── register.js.map
+│       │   │   │   ├── register.mjs
+│       │   │   │   ├── register.mjs.map
+│       │   │   │   ├── reset-password.js
+│       │   │   │   ├── reset-password.js.map
+│       │   │   │   ├── reset-password.mjs
+│       │   │   │   └── reset-password.mjs.map
+│       │   │   ├── crud
+│       │   │   │   ├── role
+│       │   │   │   │   ├── create-role.js
+│       │   │   │   │   ├── create-role.js.map
+│       │   │   │   │   ├── create-role.mjs
+│       │   │   │   │   ├── create-role.mjs.map
+│       │   │   │   │   ├── delete-role.js
+│       │   │   │   │   ├── delete-role.js.map
+│       │   │   │   │   ├── delete-role.mjs
+│       │   │   │   │   ├── delete-role.mjs.map
+│       │   │   │   │   ├── update-role.js
+│       │   │   │   │   ├── update-role.js.map
+│       │   │   │   │   ├── update-role.mjs
+│       │   │   │   │   └── update-role.mjs.map
+│       │   │   │   └── user
+│       │   │   │       ├── create-user.js
+│       │   │   │       ├── create-user.js.map
+│       │   │   │       ├── create-user.mjs
+│       │   │   │       ├── create-user.mjs.map
+│       │   │   │       ├── delete-user.js
+│       │   │   │       ├── delete-user.js.map
+│       │   │   │       ├── delete-user.mjs
+│       │   │   │       ├── delete-user.mjs.map
+│       │   │   │       ├── update-user.js
+│       │   │   │       ├── update-user.js.map
+│       │   │   │       ├── update-user.mjs
+│       │   │   │       └── update-user.mjs.map
+│       │   │   ├── index.js
+│       │   │   ├── index.js.map
+│       │   │   ├── index.mjs
+│       │   │   └── index.mjs.map
+│       │   ├── queries
+│       │   │   ├── index.js
+│       │   │   ├── index.js.map
+│       │   │   ├── index.mjs
+│       │   │   ├── index.mjs.map
+│       │   │   ├── me.js
+│       │   │   ├── me.js.map
+│       │   │   ├── me.mjs
+│       │   │   └── me.mjs.map
+│       │   ├── resolvers-configs.js
+│       │   ├── resolvers-configs.js.map
+│       │   ├── resolvers-configs.mjs
+│       │   ├── resolvers-configs.mjs.map
+│       │   ├── types
+│       │   │   ├── create-role-payload.js
+│       │   │   ├── create-role-payload.js.map
+│       │   │   ├── create-role-payload.mjs
+│       │   │   ├── create-role-payload.mjs.map
+│       │   │   ├── delete-role-payload.js
+│       │   │   ├── delete-role-payload.js.map
+│       │   │   ├── delete-role-payload.mjs
+│       │   │   ├── delete-role-payload.mjs.map
+│       │   │   ├── index.js
+│       │   │   ├── index.js.map
+│       │   │   ├── index.mjs
+│       │   │   ├── index.mjs.map
+│       │   │   ├── login-input.js
+│       │   │   ├── login-input.js.map
+│       │   │   ├── login-input.mjs
+│       │   │   ├── login-input.mjs.map
+│       │   │   ├── login-payload.js
+│       │   │   ├── login-payload.js.map
+│       │   │   ├── login-payload.mjs
+│       │   │   ├── login-payload.mjs.map
+│       │   │   ├── me-role.js
+│       │   │   ├── me-role.js.map
+│       │   │   ├── me-role.mjs
+│       │   │   ├── me-role.mjs.map
+│       │   │   ├── me.js
+│       │   │   ├── me.js.map
+│       │   │   ├── me.mjs
+│       │   │   ├── me.mjs.map
+│       │   │   ├── password-payload.js
+│       │   │   ├── password-payload.js.map
+│       │   │   ├── password-payload.mjs
+│       │   │   ├── password-payload.mjs.map
+│       │   │   ├── register-input.js
+│       │   │   ├── register-input.js.map
+│       │   │   ├── register-input.mjs
+│       │   │   ├── register-input.mjs.map
+│       │   │   ├── update-role-payload.js
+│       │   │   ├── update-role-payload.js.map
+│       │   │   ├── update-role-payload.mjs
+│       │   │   ├── update-role-payload.mjs.map
+│       │   │   ├── user-input.js
+│       │   │   ├── user-input.js.map
+│       │   │   ├── user-input.mjs
+│       │   │   └── user-input.mjs.map
+│       │   ├── utils.js
+│       │   ├── utils.js.map
+│       │   ├── utils.mjs
+│       │   └── utils.mjs.map
+│       ├── index.js
+│       ├── index.js.map
+│       ├── index.mjs
+│       ├── index.mjs.map
+│       ├── index2.js
+│       ├── index2.js.map
+│       ├── index2.mjs
+│       ├── index2.mjs.map
+│       ├── middlewares
+│       │   ├── index.js
+│       │   ├── index.js.map
+│       │   ├── index.mjs
+│       │   ├── index.mjs.map
+│       │   ├── rateLimit.js
+│       │   ├── rateLimit.js.map
+│       │   ├── rateLimit.mjs
+│       │   └── rateLimit.mjs.map
+│       ├── register.js
+│       ├── register.js.map
+│       ├── register.mjs
+│       ├── register.mjs.map
+│       ├── routes
+│       │   ├── admin
+│       │   │   ├── index.js
+│       │   │   ├── index.js.map
+│       │   │   ├── index.mjs
+│       │   │   ├── index.mjs.map
+│       │   │   ├── permissions.js
+│       │   │   ├── permissions.js.map
+│       │   │   ├── permissions.mjs
+│       │   │   ├── permissions.mjs.map
+│       │   │   ├── role.js
+│       │   │   ├── role.js.map
+│       │   │   ├── role.mjs
+│       │   │   ├── role.mjs.map
+│       │   │   ├── settings.js
+│       │   │   ├── settings.js.map
+│       │   │   ├── settings.mjs
+│       │   │   └── settings.mjs.map
+│       │   ├── content-api
+│       │   │   ├── auth.js
+│       │   │   ├── auth.js.map
+│       │   │   ├── auth.mjs
+│       │   │   ├── auth.mjs.map
+│       │   │   ├── index.js
+│       │   │   ├── index.js.map
+│       │   │   ├── index.mjs
+│       │   │   ├── index.mjs.map
+│       │   │   ├── permissions.js
+│       │   │   ├── permissions.js.map
+│       │   │   ├── permissions.mjs
+│       │   │   ├── permissions.mjs.map
+│       │   │   ├── role.js
+│       │   │   ├── role.js.map
+│       │   │   ├── role.mjs
+│       │   │   ├── role.mjs.map
+│       │   │   ├── user.js
+│       │   │   ├── user.js.map
+│       │   │   ├── user.mjs
+│       │   │   └── user.mjs.map
+│       │   ├── index.js
+│       │   ├── index.js.map
+│       │   ├── index.mjs
+│       │   └── index.mjs.map
+│       ├── services
+│       │   ├── index.js
+│       │   ├── index.js.map
+│       │   ├── index.mjs
+│       │   ├── index.mjs.map
+│       │   ├── jwt.js
+│       │   ├── jwt.js.map
+│       │   ├── jwt.mjs
+│       │   ├── jwt.mjs.map
+│       │   ├── permission.js
+│       │   ├── permission.js.map
+│       │   ├── permission.mjs
+│       │   ├── permission.mjs.map
+│       │   ├── providers-registry.js
+│       │   ├── providers-registry.js.map
+│       │   ├── providers-registry.mjs
+│       │   ├── providers-registry.mjs.map
+│       │   ├── providers.js
+│       │   ├── providers.js.map
+│       │   ├── providers.mjs
+│       │   ├── providers.mjs.map
+│       │   ├── role.js
+│       │   ├── role.js.map
+│       │   ├── role.mjs
+│       │   ├── role.mjs.map
+│       │   ├── user.js
+│       │   ├── user.js.map
+│       │   ├── user.mjs
+│       │   ├── user.mjs.map
+│       │   ├── users-permissions.js
+│       │   ├── users-permissions.js.map
+│       │   ├── users-permissions.mjs
+│       │   └── users-permissions.mjs.map
+│       ├── strategies
+│       │   ├── users-permissions.js
+│       │   ├── users-permissions.js.map
+│       │   ├── users-permissions.mjs
+│       │   └── users-permissions.mjs.map
+│       └── utils
+│           ├── index.js
+│           ├── index.js.map
+│           ├── index.mjs
+│           ├── index.mjs.map
+│           └── sanitize
+│               ├── index.js
+│               ├── index.js.map
+│               ├── index.mjs
+│               ├── index.mjs.map
+│               ├── sanitizers.js
+│               ├── sanitizers.js.map
+│               ├── sanitizers.mjs
+│               ├── sanitizers.mjs.map
+│               └── visitors
+│                   ├── index.js
+│                   ├── index.js.map
+│                   ├── index.mjs
+│                   ├── index.mjs.map
+│                   ├── remove-user-relation-from-role-entities.js
+│                   ├── remove-user-relation-from-role-entities.js.map
+│                   ├── remove-user-relation-from-role-entities.mjs
+│                   └── remove-user-relation-from-role-entities.mjs.map
+├── documentation
+│   └── content-api.yaml
+├── jest.config.front.js
+├── package.json
+├── rollup.config.mjs
+└── server
+    ├── bootstrap
+    │   ├── index.js
+    │   └── users-permissions-actions.js
+    ├── config.js
+    ├── content-types
+    │   ├── index.js
+    │   ├── permission
+    │   │   └── index.js
+    │   ├── role
+    │   │   └── index.js
+    │   └── user
+    │       ├── index.js
+    │       └── schema-config.js
+    ├── controllers
+    │   ├── auth.js
+    │   ├── content-manager-user.js
+    │   ├── index.js
+    │   ├── permissions.js
+    │   ├── role.js
+    │   ├── settings.js
+    │   ├── user.js
+    │   └── validation
+    │       ├── auth.js
+    │       ├── email-template.js
+    │       └── user.js
+    ├── graphql
+    │   ├── index.js
+    │   ├── mutations
+    │   │   ├── auth
+    │   │   │   ├── change-password.js
+    │   │   │   ├── email-confirmation.js
+    │   │   │   ├── forgot-password.js
+    │   │   │   ├── login.js
+    │   │   │   ├── register.js
+    │   │   │   └── reset-password.js
+    │   │   ├── crud
+    │   │   │   ├── role
+    │   │   │   │   ├── create-role.js
+    │   │   │   │   ├── delete-role.js
+    │   │   │   │   └── update-role.js
+    │   │   │   └── user
+    │   │   │       ├── create-user.js
+    │   │   │       ├── delete-user.js
+    │   │   │       └── update-user.js
+    │   │   └── index.js
+    │   ├── queries
+    │   │   ├── index.js
+    │   │   └── me.js
+    │   ├── resolvers-configs.js
+    │   ├── types
+    │   │   ├── create-role-payload.js
+    │   │   ├── delete-role-payload.js
+    │   │   ├── index.js
+    │   │   ├── login-input.js
+    │   │   ├── login-payload.js
+    │   │   ├── me-role.js
+    │   │   ├── me.js
+    │   │   ├── password-payload.js
+    │   │   ├── register-input.js
+    │   │   ├── update-role-payload.js
+    │   │   └── user-input.js
+    │   └── utils.js
+    ├── index.js
+    ├── middlewares
+    │   ├── index.js
+    │   └── rateLimit.js
+    ├── register.js
+    ├── routes
+    │   ├── admin
+    │   │   ├── index.js
+    │   │   ├── permissions.js
+    │   │   ├── role.js
+    │   │   └── settings.js
+    │   ├── content-api
+    │   │   ├── auth.js
+    │   │   ├── index.js
+    │   │   ├── permissions.js
+    │   │   ├── role.js
+    │   │   └── user.js
+    │   └── index.js
+    ├── services
+    │   ├── index.js
+    │   ├── jwt.js
+    │   ├── permission.js
+    │   ├── providers-registry.js
+    │   ├── providers.js
+    │   ├── role.js
+    │   ├── user.js
+    │   └── users-permissions.js
+    ├── strategies
+    │   └── users-permissions.js
+    └── utils
+        ├── index.d.ts
+        ├── index.js
+        └── sanitize
+            ├── index.js
+            ├── sanitizers.js
+            └── visitors
+                ├── index.js
+                └── remove-user-relation-from-role-entities.js
+
+106 directories, 711 files

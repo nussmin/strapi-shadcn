@@ -466,7 +466,9 @@ export interface ApiTeamTeam extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::team.team'> &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -963,21 +965,10 @@ export interface PluginUsersPermissionsUser
     draftAndPublish: false;
   };
   attributes: {
-    bio: Schema.Attribute.Text &
-      Schema.Attribute.SetPluginOptions<{
-        'users-permissions': {
-          visible: true;
-        };
-      }> &
-      Schema.Attribute.DefaultTo<''>;
+    bio: Schema.Attribute.Text & Schema.Attribute.DefaultTo<''>;
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     businessRole: Schema.Attribute.Enumeration<['ADMIN', 'USER']> &
       Schema.Attribute.Required &
-      Schema.Attribute.SetPluginOptions<{
-        'users-permissions': {
-          visible: true;
-        };
-      }> &
       Schema.Attribute.DefaultTo<'USER'>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -990,27 +981,18 @@ export interface PluginUsersPermissionsUser
     >;
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
+      Schema.Attribute.Unique &
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
     firstName: Schema.Attribute.String &
       Schema.Attribute.Required &
-      Schema.Attribute.SetPluginOptions<{
-        'users-permissions': {
-          visible: true;
-        };
-      }> &
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 50;
         minLength: 1;
       }>;
     lastName: Schema.Attribute.String &
       Schema.Attribute.Required &
-      Schema.Attribute.SetPluginOptions<{
-        'users-permissions': {
-          visible: true;
-        };
-      }> &
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 50;
         minLength: 1;
@@ -1041,7 +1023,7 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.Required &
       Schema.Attribute.Unique &
       Schema.Attribute.SetMinMaxLength<{
-        minLength: 3;
+        minLength: 6;
       }>;
   };
 }

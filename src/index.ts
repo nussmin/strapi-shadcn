@@ -30,7 +30,7 @@ export default {
 
     // Example: List all content types
     console.log("Content Types available:", Object.keys(strapi.contentTypes));
-    Object.keys(strapi.contentTypes).forEach(uid => {
+    Object.keys(strapi.contentTypes).forEach((uid) => {
       console.log(`${uid}:`, strapi.contentTypes[uid].attributes);
     });
 
@@ -40,14 +40,27 @@ export default {
         return await next();
       } */
 
-      console.log("=== Incoming Request ===");
-      console.log("Method:", ctx.request.method);
-      console.log("URL:", ctx.request.url);
-      console.log("Headers:", ctx.request.headers);
-      console.log("Cookies:", ctx.request.headers.cookie);
-      console.log("=====================");
+      // Create a copy of the raw body if needed
+      let rawBody = "";
+      if (ctx.request.method === "POST" || ctx.request.method === "PUT") {
+        ctx.req.on("data", (chunk) => {
+          rawBody += chunk.toString();
+        });
+      }
 
       await next();
+
+      // After next(), the body should be parsed
+      if (ctx.request.method === "POST" || ctx.request.method === "PUT") {
+        console.log("=== Request Body ===");
+        console.log("Parsed Body:", ctx.request.body);
+        console.log("Raw Body:", rawBody);
+        console.log("==================");
+      }
+
+      console.log("=== Response ===");
+      console.log("Status:", ctx.response.status);
+      console.log("================");
     });
   },
 };

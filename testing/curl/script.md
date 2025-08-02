@@ -1,6 +1,7 @@
-
 test cookie is working
+
 ```bash
+#login
 curl -i -X POST http://localhost:1337/api/auth/local \
   -H "Content-Type: application/json" \
   -d '{
@@ -9,10 +10,11 @@ curl -i -X POST http://localhost:1337/api/auth/local \
       }' \
   -c cookiejar.txt
 
-cat cookiejar.txt 
+cat cookiejar.txt
 
-# test response
+# test auth status response
 curl -b cookiejar.txt http://localhost:1337/api/users/me | jq
+
 
 # Expected content. note the domain should only contain 'localhost or somewebsite.com'
 # Netscape HTTP Cookie File
@@ -23,9 +25,272 @@ curl -b cookiejar.txt http://localhost:1337/api/users/me | jq
 #HttpOnly_.localhost    TRUE    /       FALSE   1755094557      Auth    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzUyNTAyNTU3LCJleHAiOjE3NTUwOTQ1NTd9.fbpBLUTyn9gjbhpyS1WycsbLi8D3VKsU2TMZjP7XA0A
 
 
-# to reterieve data after authenticated 
+# to reterieve data after authenticated
 curl -i -X GET http://localhost:1337/api/users/me \
   -b cookiejar.txt \
   -H "Content-Type: application/json"
 ```
 
+# test registration api
+
+# A) New Team Name
+
+```bash
+curl -i -X POST http://localhost:1337/api/auth/local/register \
+  -H "Content-Type: application/json" \
+  -d '{
+        "email": "best@gmail.com",
+        "firstName": "Best",
+        "lastName": "User",
+        "password": "ABC@112358",
+        "teamId": null,
+        "teamName": "Dream Team"
+      }'
+
+# B) Join Existing Team Name
+curl -i -X POST http://localhost:1337/api/auth/local/register \
+  -H "Content-Type: application/json" \
+  -d '{
+        "identifier": "best@gmail.com",
+        "firstName": "Best",
+        "lastName": "User",
+        "password": "ABC@112358",
+        "teamId": "existing-team-uuid",
+        "teamName": null
+      }'
+
+```
+
+
+# Get existing team 
+curl -s -G "http://localhost:1337/api/teams" \
+  --data-urlencode 'fields[0]=name' \
+  --
+  --data-urlencode 'pagination[pageSize]=100' | \
+  jq '.data[] | {id: .id, name: .name}'
+
+response
+{"data":[{"id":1,"documentId":"azb3klr2c1ccndwzjxajyqv3","name":"team 1"},{"id":2,"documentId":"z23c0rt9lp3lfoxd2b7yazrn","name":"Gteam"},{"id":3,"documentId":"h3pe93k14eqllm2jc4x8dqq3","name":"strange team"}],"meta":{"pagination":{"page":1,"pageSize":100,"pageCount":1,"total":3}}}
+
+
+curl -G "http://localhost:1337/api/teams"
+
+response
+{"data":[{"id":1,"documentId":"azb3klr2c1ccndwzjxajyqv3","name":"team 1","description":"first team thru admin ui","createdAt":"2025-08-01T03:41:24.505Z","updatedAt":"2025-08-01T03:41:24.505Z","publishedAt":"2025-08-01T03:41:24.495Z"},{"id":2,"documentId":"z23c0rt9lp3lfoxd2b7yazrn","name":"Gteam","description":"the power team","createdAt":"2025-08-01T03:41:57.966Z","updatedAt":"2025-08-01T03:41:57.966Z","publishedAt":"2025-08-01T03:41:57.961Z"},{"id":3,"documentId":"h3pe93k14eqllm2jc4x8dqq3","name":"strange team","description":"the team that work during the december","createdAt":"2025-08-01T03:42:30.476Z","updatedAt":"2025-08-01T03:42:30.476Z","publishedAt":"2025-08-01T03:42:30.473Z"}],"meta":{"pagination":{"page":1,"pageSize":25,"pageCount":1,"total":3}}}
+
+
+# Test product api
+
+Constructed url - http://localhost:1337/api/products?filters[publishedAt][$notNull]=true&populate=deep&pagination[pageSize]=100
+
+```bash
+curl -s -G "http://localhost:1337/api/products" \
+  -H "Authorization: Bearer <GeneratedAPIToken>" \
+  --data-urlencode 'filters[publishedAt][$notNull]=true' \
+  --data-urlencode 'fields[0]=name' \
+  --data-urlencode 'fields[1]=price' \
+  --data-urlencode 'fields[2]=slug' \
+  --data-urlencode 'populate[images][fields][0]=url' \
+  --data-urlencode 'pagination[pageSize]=100' | \
+  jq -r '
+    .data[] |
+    {
+      name: .name,
+      price: .price,
+      slug: .slug,
+      images: (.images // [] | map("http://localhost:1337" + .url))
+    }'
+
+```
+
+# Strapi v5 REST Query Cheatsheet
+
+## 1. Authentication
+
+| Purpose             | Example                                     |
+| ------------------- | ------------------------------------------- |
+| Bearer token header | `-H "Authorization: Bearer YOUR_API_TOKEN"` |
+
+---
+
+## 2. Filter Operators
+
+| Operator      | Syntax Example                                                      | Description                                       |
+| ------------- | ------------------------------------------------------------------- | ------------------------------------------------- |
+| `$eq`         | `filters[name][$eq]=Rocket`                                         | Equals the string “Rocket”                        |
+| `$ne`         | `filters[price][$ne]=1000`                                          | Price is not 1000                                 |
+| `$gt`         | `filters[price][$gt]=100`                                           | Price greater than 100                            |
+| `$gte`        | `filters[price][$gte]=100`                                          | Price greater than or equal to 100                |
+| `$lt`         | `filters[price][$lt]=500`                                           | Price less than 500                               |
+| `$lte`        | `filters[price][$lte]=500`                                          | Price less than or equal to 500                   |
+| `$in`         | `filters[slug][$in]=foo,bar,baz`                                    | Slug is one of “foo”, “bar”, or “baz”             |
+| `$nin`        | `filters[slug][$nin]=old1,old2`                                     | Slug is neither “old1” nor “old2”                 |
+| `$contains`   | `filters[name][$contains]=Core`                                     | Name contains substring “Core” (case-sensitive)   |
+| `$containsi`  | `filters[name][$containsi]=core`                                    | Name contains substring “core” (case-insensitive) |
+| `$startsWith` | `filters[name][$startsWith]=Pro`                                    | Name starts with “Pro”                            |
+| `$endsWith`   | `filters[name][$endsWith]=Plus`                                     | Name ends with “Plus”                             |
+| `$null`       | `filters[description][$null]=true`                                  | Description is null / missing                     |
+| `$notNull`    | `filters[publishedAt][$notNull]=true`                               | `publishedAt` is set (i.e., published)            |
+| `$or`         | `filters[$or][0][price][$lt]=100&filters[$or][1][featured]=true`    | Either price < 100 OR featured is true            |
+| `$and`        | `filters[$and][0][featured]=true&filters[$and][1][price][$gte]=100` | Both featured is true AND price ≥ 100             |
+| `$not`        | `filters[name][$not][$contains]=Deprecated`                         | Name does not contain “Deprecated”                |
+
+---
+
+## 3. Population
+
+| Purpose                                     | Query Param Example                    | Description                                          |
+| ------------------------------------------- | -------------------------------------- | ---------------------------------------------------- |
+| Deep populate all relations/components      | `populate=deep`                        | Recursively include all relations, media, components |
+| Populate a relation fully                   | `populate[images]=*`                   | Include all fields of the `images` media array       |
+| Populate only specific fields of a relation | `populate[categories][fields][0]=name` | Include only the `name` field from categories        |
+| Deep inside dynamic zone                    | `populate[dynamic_zone][populate]=*`   | Recursively populate components within dynamic zone  |
+
+---
+
+## 4. Field Selection
+
+| Purpose                      | Example                                         | Description                                             |
+| ---------------------------- | ----------------------------------------------- | ------------------------------------------------------- |
+| Limit scalar fields returned | `fields[0]=name&fields[1]=price&fields[2]=slug` | Only return `name`, `price`, and `slug` on each product |
+
+---
+
+## 5. Pagination
+
+| Purpose       | Example                                       | Description                    |
+| ------------- | --------------------------------------------- | ------------------------------ |
+| Page size     | `pagination[pageSize]=50`                     | Return up to 50 items per page |
+| Specific page | `pagination[page]=2`                          | Get the second page of results |
+| Combined      | `pagination[page]=1&pagination[pageSize]=100` | First page, 100 items per page |
+
+---
+
+## 6. Sorting
+
+| Syntax                          | Description                                                      |
+| ------------------------------- | ---------------------------------------------------------------- |
+| `sort=price:asc`                | Sort results by `price` ascending                                |
+| `sort=createdAt:desc`           | Sort by creation date descending (newest first)                  |
+| `sort=price:asc&sort=name:desc` | First by `price` ascending, then `name` descending as tiebreaker |
+
+---
+
+## 7. Combined Example
+
+Fetch **published** products, selecting specific fields, including image URLs, sorted by price ascending, first 100:
+
+```text
+/api/products?
+filters[publishedAt][$notNull]=true&
+fields[0]=name&fields[1]=price&fields[2]=slug&
+populate[images][fields][0]=url&
+sort=price:asc&
+pagination[page]=1&
+pagination[pageSize]=100
+```
+
+Here’s how a GET request like
+`/api/products?filters[publishedAt][$notNull]=true&populate=deep&pagination[pageSize]=100`
+is handled internally by Strapi v5 given your schema, and how it assembles the full JSON response with relations, components, media, and dynamic zones—even though you didn’t write any custom controller/service logic.
+
+## 1. High-level flow
+
+- Request arrives at the core controller (createCoreController) for api::product.product.
+- The controller delegates to Strapi’s entity service layer (via strapi.entityService.findMany under the hood of super.find(ctx)).
+- The query parameters (filters, populate, pagination, sort, etc.) are parsed and normalized into an internal query object.
+- The entity service uses the query engine (built on top of the database layer, e.g., Knex for SQL DBs) to:
+  - Apply filters (e.g., publishedAt IS NOT NULL).
+  - Apply pagination.
+  - Resolve populate instructions to fetch related data.
+- Data is fetched (often in multiple SQL queries), assembled/merged into the shape requested, and returned as the REST JSON response with data + meta.
+
+## 2. Filtering / Base entity retrieval
+
+- The filter filters[publishedAt][$notNull]=true becomes a condition like WHERE published_at IS NOT NULL (field names snake-cased or as configured).
+- Pagination (pageSize=100) and, if present, page translate to LIMIT / OFFSET.
+- The base product rows are fetched first. That returns the scalar attributes: name, price, slug, featured, etc., plus internal IDs used for later population.
+
+## 3. Population of relations / media / components / dynamic zones
+
+Strapi’s populate system is recursive and polymorphic. populate=deep tells it to walk the schema of the returned entities and fetch all associated content. Internally this works as:
+c. Relations (plans and categories)
+Both are oneToMany relations mapped by product on their side.
+
+For each product returned, Strapi issues additional queries to fetch related plan and category entries where their product foreign key references the current product.
+
+Depending on populate depth and batching logic, Strapi may:
+
+Collect all product IDs from the page.
+
+Run a single query per relation type like:
+SELECT \* FROM plans WHERE product_id IN (list-of-product-ids)
+and similarly for categories.
+
+Then group those by product and attach them under plans and categories keys in each product.
+
+4. Recursive population (populate=deep)
+   deep does schema introspection: for every relation/component/media that itself has nested relations, Strapi continues fetching.
+   Example: if categories had their own relations and deep is in effect, Strapi would repeat the process for those nested entities as well, up to internal limits to avoid infinite recursion.
+
+5. Assembly of the response
+   Once all required pieces are fetched (base products, related plans/categories, media, component/dynamic zone contents), Strapi merges them into the final JSON structure:
+
+Each product object in .data[] has its scalar fields.
+
+Embedded arrays/objects for images, plans, categories, perks, and dynamic_zone.
+
+The meta.pagination object is added reflecting total count, current page, page size, etc.
+
+Be explicit about what you need (don’t use populate=deep in prod)
+Instead of overpopulating everything, specify only the relations/fields you actually consume:
+
+bash
+Copy
+Edit
+
+# Only needed fields and images URL
+
+curl -G "http://localhost:1337/api/products" \
+ -H "Authorization: Bearer $TOKEN" \
+  --data-urlencode 'filters[publishedAt][$notNull]=true' \
+ --data-urlencode 'fields[0]=name' \
+ --data-urlencode 'fields[1]=price' \
+ --data-urlencode 'fields[2]=slug' \
+ --data-urlencode 'populate[images][fields][0]=url' \
+ --data-urlencode 'pagination[pageSize]=50'
+That avoids fetching plans, categories, dynamic_zone, etc., unless you actually need them.
+
+# Strapi v5 CRUD Mapping: REST ↔ Entity Service ↔ SQL
+
+| Action  | REST Example / Params | Entity Service (programmatic) | Approximate SQL |
+|---------|----------------------|-------------------------------|-----------------|
+| **Create** | `POST /api/products` with body `{ data: { name: "X", price: 100 } }` | `await strapi.entityService.create('api::product.product', { data: { name: 'X', price: 100 } });` | `INSERT INTO products (name, price) VALUES ('X', 100);` |
+| **Find Many** | `GET /api/products?filters[publishedAt][$notNull]=true&sort=price:asc&populate[images]=*&pagination[page]=1&pageSize=20` | `await strapi.entityService.findMany('api::product.product', { filters: { publishedAt: { $notNull: true } }, sort: { price: 'asc' }, populate: { images: '*' }, pagination: { page: 1, pageSize: 20 } });` | `SELECT name, price, slug FROM products WHERE published_at IS NOT NULL ORDER BY price ASC LIMIT 20 OFFSET 0;`<br>`-- plus separate fetches for images via join on upload tables` |
+| **Find One** | `GET /api/products/6?populate=images,categories` | `await strapi.entityService.findOne('api::product.product', 6, { populate: { images: true, categories: true } });` | `SELECT * FROM products WHERE id = 6;`<br>`-- plus related selects for images/categories` |
+| **Update** | `PUT /api/products/6` with body `{ data: { price: 600 } }` | `await strapi.entityService.update('api::product.product', 6, { data: { price: 600 } });` | `UPDATE products SET price = 600 WHERE id = 6;` |
+| **Delete** | `DELETE /api/products/6` | `await strapi.entityService.delete('api::product.product', 6);` | `DELETE FROM products WHERE id = 6;` |
+
+## Filter / Where examples
+
+| Semantics | REST syntax | Service object | SQL equivalent |
+|-----------|-------------|----------------|----------------|
+| equals | `filters[name][$eq]=Rocket` | `{ name: { $eq: 'Rocket' } }` | `WHERE name = 'Rocket'` |
+| range | `filters[price][$gte]=100&filters[price][$lte]=500` | `{ price: { $gte: 100, $lte: 500 } }` | `WHERE price >= 100 AND price <= 500` |
+| or | `filters[$or][0][price][$lt]=100&filters[$or][1][featured]=true` | `{ $or: [ { price: { $lt: 100 } }, { featured: true } ] }` | `WHERE price < 100 OR featured = TRUE` |
+| not contains | `filters[name][$not][$contains]=Deprecated` | `{ name: { $not: { $contains: 'Deprecated' } } }` | `WHERE name NOT LIKE '%Deprecated%'` |
+
+## Sorting & Pagination
+
+| Purpose | REST | Service | SQL |
+|---------|------|---------|-----|
+| Sort ascending | `sort=price:asc` | `sort: { price: 'asc' }` | `ORDER BY price ASC` |
+| Pagination | `pagination[page]=2&pagination[pageSize]=50` | `pagination: { page: 2, pageSize: 50 }` | `LIMIT 50 OFFSET 50` |
+
+## Population (relations/media)
+
+| Relation | REST | Service | SQL (conceptual) |
+|----------|------|---------|------------------|
+| Images | `populate[images]=*` | `populate: { images: '*' }` | Join via `upload_file_morph` → `upload_file` |
+| Plans | `populate[plans]=*` | `populate: { plans: '*' }` | `SELECT * FROM plans WHERE product_id IN (...)` |
+| Deep | `populate=deep` | `populate: 'deep'` | Recursive fetch of related rows (multiple selects/joins) |

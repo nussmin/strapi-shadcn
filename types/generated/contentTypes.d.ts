@@ -965,10 +965,21 @@ export interface PluginUsersPermissionsUser
     draftAndPublish: false;
   };
   attributes: {
-    bio: Schema.Attribute.Text & Schema.Attribute.DefaultTo<''>;
+    bio: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'users-permissions': {
+          visible: true;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<''>;
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     businessRole: Schema.Attribute.Enumeration<['ADMIN', 'USER']> &
       Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        'users-permissions': {
+          visible: true;
+        };
+      }> &
       Schema.Attribute.DefaultTo<'USER'>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -987,12 +998,22 @@ export interface PluginUsersPermissionsUser
       }>;
     firstName: Schema.Attribute.String &
       Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        'users-permissions': {
+          visible: true;
+        };
+      }> &
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 50;
         minLength: 1;
       }>;
     lastName: Schema.Attribute.String &
       Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        'users-permissions': {
+          visible: true;
+        };
+      }> &
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 50;
         minLength: 1;
@@ -1015,7 +1036,12 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
-    team: Schema.Attribute.Relation<'manyToOne', 'api::team.team'>;
+    team: Schema.Attribute.Relation<'manyToOne', 'api::team.team'> &
+      Schema.Attribute.SetPluginOptions<{
+        'users-permissions': {
+          visible: true;
+        };
+      }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

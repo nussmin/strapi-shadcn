@@ -4,75 +4,86 @@ export default (plugin) => {
   // Extend the user content type schema
   plugin.contentTypes.user.schema.attributes = {
     ...plugin.contentTypes.user.schema.attributes,
+
     firstName: {
       type: "string",
       required: true,
       minLength: 1,
       maxLength: 50,
+      pluginOptions: {
+        "users-permissions": { visible: true },
+      },
     },
     lastName: {
       type: "string",
       required: true,
       minLength: 1,
       maxLength: 50,
+      pluginOptions: {
+        "users-permissions": { visible: true },
+      },
     },
     businessRole: {
       type: "enumeration",
       enum: ["ADMIN", "USER"],
       default: "USER",
       required: true,
+      pluginOptions: {
+        "users-permissions": { visible: true },
+      },
     },
     bio: {
       type: "text",
       default: "",
+      pluginOptions: {
+        "users-permissions": { visible: true },
+      },
     },
     team: {
       type: "relation",
       relation: "manyToOne",
       target: "api::team.team",
       inversedBy: "users",
+      pluginOptions: {
+        "users-permissions": { visible: true },
+      },
     },
   };
-
-  // In Strapi v5, we need to use the new middleware syntax
-  const registerRoute = plugin.routes["content-api"].routes.find(
-    (route) => route.method === "POST" && route.path === "/auth/local/register"
-  );
-
-  if (registerRoute) {
-    // Create a custom middleware
-    const transformIdentifierMiddleware = async (ctx, next) => {
-      // Transform identifier to email and username before validation
-      if (ctx.request.body?.identifier) {
-        ctx.request.body.email = ctx.request.body.identifier;
-        ctx.request.body.username = ctx.request.body.identifier;
-        delete ctx.request.body.identifier;
+  
+  // Override the defualt register validation
+  plugin.routes["content-api"].routes = plugin.routes["content-api"].routes.map(
+    (route) => {
+      if (route.method === "POST" && route.path === "/auth/local/register") {
+        return {
+          ...route,
+          config: {
+            ...route.config,
+            // Remove or customize validation
+            validate: {
+              body: {
+                identifier: { required: true },
+                password: { required: true },
+                firstName: { required: true },
+                lastName: { required: true },
+                teamId: { required: false },
+                teamName: { required: false },
+              },
+            },
+          },
+        };
       }
-      
-      strapi.log.info("Transformed body:", ctx.request.body);
-      
-      await next();
-    };
-
-    // Add middleware to the route
-    if (!registerRoute.config) {
-      registerRoute.config = {};
+      return route;
     }
-    if (!registerRoute.config.middlewares) {
-      registerRoute.config.middlewares = [];
-    }
-    
-    // Add our middleware at the beginning
-    registerRoute.config.middlewares.unshift(transformIdentifierMiddleware);
-  }
+  );
 
   // Override the register controller
   plugin.controllers.auth.register = async (ctx) => {
-    const { email, password, firstName, lastName, teamId, teamName } = ctx.request.body;
-    
-    strapi.log.info("Register controller - request body", ctx.request.body);
+    const { identifier, password, firstName, lastName, teamId, teamName } =
+      ctx.request.body;
 
-    if (!email || !password || !firstName || !lastName) {
+    strapi.log.info("register request body", ctx.request.body);
+
+    if (!identifier || !password || !firstName || !lastName) {
       return ctx.badRequest("Missing required fields");
     }
 
@@ -80,14 +91,12 @@ export default (plugin) => {
     let businessRole = "USER";
 
     if (teamId) {
-      // Joining an existing team - Strapi v5 syntax
-      team = await strapi.documents("api::team.team").findOne({
-        documentId: teamId,
-      });
+      // Joining an existing team
+      team = await strapi.entityService.findOne("api::team.team", teamId);
       if (!team) return ctx.badRequest("Invalid team ID");
     } else if (teamName) {
-      // Check if team name already exists - Strapi v5 syntax
-      const existing = await strapi.documents("api::team.team").findMany({
+      // Check if team name already exists
+      const existing = await strapi.entityService.findMany("api::team.team", {
         filters: { name: teamName },
         limit: 1,
       });
@@ -96,68 +105,37 @@ export default (plugin) => {
         return ctx.badRequest("Team name already exists");
       }
 
-      // Create new team - Strapi v5 syntax
-      team = await strapi.documents("api::team.team").create({
+      // Create new team
+      team = await strapi.entityService.create("api::team.team", {
         data: { name: teamName },
       });
 
       businessRole = "ADMIN"; // creator of team becomes admin
     }
 
-    try {
-      // Get the default role
-      const defaultRole = await strapi
-        .query("plugin::users-permissions.role")
-        .findOne({ where: { type: "authenticated" } });
-
-      // Create the user - Strapi v5 syntax
-      const user = await strapi
-        .plugin("users-permissions")
-        .service("user")
-        .add({
-          email,
-          username: email, // Use email as username
-          password,
-          firstName,
-          lastName,
-          businessRole,
-          team: team?.id || null,
-          provider: "local",
-          confirmed: true,
-          blocked: false,
-          role: defaultRole.id,
-        });
-
-      // Generate JWT
-      const jwt = strapi
-        .plugin("users-permissions")
-        .service("jwt")
-        .issue({ id: user.id });
-
-      // Return response
-      return ctx.send({
-        jwt,
-        user: {
-          id: user.id,
-          documentId: user.documentId,
-          username: user.username,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          businessRole: user.businessRole,
-          team: user.team,
-          confirmed: user.confirmed,
-          blocked: user.blocked,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-        },
+    // Create the user
+    const user = await strapi
+      .plugin("users-permissions")
+      .service("user")
+      .add({
+        email: identifier,
+        username: identifier,
+        password,
+        firstName,
+        lastName,
+        businessRole,
+        team: team?.id || null,
       });
-    } catch (error) {
-      strapi.log.error("Registration error:", error);
-      return ctx.badRequest(
-        error.message || "Failed to create user"
-      );
-    }
+
+    const token = strapi
+      .plugin("users-permissions")
+      .service("jwt")
+      .issue({ id: user.id });
+
+    ctx.send({
+      jwt: token,
+      user,
+    });
   };
 
   return plugin;

@@ -29,10 +29,10 @@ export default {
     // console.log("Plugins:", strapi.plugins);
 
     // Example: List all content types
-    console.log("Content Types available:", Object.keys(strapi.contentTypes));
-    Object.keys(strapi.contentTypes).forEach((uid) => {
-      console.log(`${uid}:`, strapi.contentTypes[uid].attributes);
-    });
+    // console.log("Content Types available:", Object.keys(strapi.contentTypes));
+    // Object.keys(strapi.contentTypes).forEach((uid) => {
+    //   console.log(`${uid}:`, strapi.contentTypes[uid].attributes);
+    // });
 
     strapi.server.use(async (ctx, next) => {
       /* Skip admin routes
@@ -58,9 +58,9 @@ export default {
         console.log("==================");
       }
 
-      console.log("=== Response ===");
-      console.log("Status:", ctx.response.status);
-      console.log("================");
+      // console.log("=== Response ===");
+      // console.log("Status:", ctx.response.status);
+      // console.log("================");
     });
   },
 };

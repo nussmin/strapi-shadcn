@@ -34,7 +34,7 @@ export default ({ env }) => ({
     },
   },
   documentation: {
-    enabled: false,
+    enabled: true,
     config: {
       restrictedAccess: true,
       openapi: '3.0.0',

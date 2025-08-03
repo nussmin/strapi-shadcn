@@ -114,6 +114,11 @@ npx strapi content-types:list
 ```
 
 
+## List all routes in Strapi
+`npm run strapi routes:list`
+
+
+
 ## Key Benefits
 ✅ Security: HTTP-only cookies protect against XSS attacks
 ✅ Simplicity: No manual JWT token management required

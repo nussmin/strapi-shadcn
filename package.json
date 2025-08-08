@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.18.0",
-    "@strapi/plugin-documentation": "^5.20.0",
+    "@strapi/plugin-documentation": "5.18.0",
     "@strapi/plugin-users-permissions": "5.18.0",
     "@strapi/strapi": "5.18.0",
     "better-sqlite3": "11.3.0",
@@ -39,6 +39,7 @@
   },
   "strapi": {
     "uuid": "944ae15e-d81b-4543-80bd-862c8bc7d517",
-    "installId": "2a47a9a4de744d981eb75fc16012aab16620408003ed148ce6e300fe1803eb85"
+    "installId": "2a47a9a4de744d981eb75fc16012aab16620408003ed148ce6e300fe1803eb85",
+    "telemetryDisabled": true
   }
 }

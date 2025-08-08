@@ -1,66 +1,84 @@
 // import type { Core } from '@strapi/strapi';
+const util = require('util');
 
 export default {
   /**
    * An asynchronous register function that runs before
    * your application is initialized.
-   *
-   * This gives you an opportunity to extend code.
    */
   register(/* { strapi }: { strapi: Core.Strapi } */) {},
 
   /**
    * An asynchronous bootstrap function that runs before
    * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
    */
   bootstrap({ strapi }) {
     strapi.log.info("bootstrap loaded");
-    // You can access various Strapi properties:
-    // console.log("Config:", strapi.config);
-    // console.log("Server:", strapi.server);
-    // console.log("Database:", strapi.db);
-    // console.log("Entity Service:", strapi.entityService);
-    // console.log("Services:", strapi.services);
-    // console.log("Controllers:", strapi.controllers);
-    // console.log("Models:", strapi.contentTypes);
-    // console.log("Plugins:", strapi.plugins);
 
-    // Example: List all content types
-    // console.log("Content Types available:", Object.keys(strapi.contentTypes));
-    // Object.keys(strapi.contentTypes).forEach((uid) => {
-    //   console.log(`${uid}:`, strapi.contentTypes[uid].attributes);
-    // });
+    // Log any unhandled Koa errors with full stack and response body
+    strapi.server.app.on('error', (err, ctx) => {
+      console.error('Unhandled Koa error:');
+      console.error(
+        util.inspect(err, { showHidden: true, depth: null, colors: true })
+      );
+      console.error('Response Body:', util.inspect(ctx.response.body, { depth: null }));
+    });
 
     strapi.server.use(async (ctx, next) => {
-      /* Skip admin routes
-      if (ctx.request.url.startsWith("/admin")) {
-        return await next();
-      } */
+      // Skip logging for admin routes if desired
+      // if (ctx.request.url.startsWith('/admin')) {
+      //   return await next();
+      // }
 
-      // Create a copy of the raw body if needed
-      let rawBody = "";
-      if (ctx.request.method === "POST" || ctx.request.method === "PUT") {
-        ctx.req.on("data", (chunk) => {
+      // Capture raw request body
+      let rawBody = '';
+      if (['POST', 'PUT', 'PATCH'].includes(ctx.request.method)) {
+        ctx.req.on('data', (chunk) => {
           rawBody += chunk.toString();
         });
       }
 
-      await next();
-
-      // After next(), the body should be parsed
-      if (ctx.request.method === "POST" || ctx.request.method === "PUT") {
-        console.log("=== Request Body ===");
-        console.log("Parsed Body:", ctx.request.body);
-        console.log("Raw Body:", rawBody);
-        console.log("==================");
+      try {
+        // Proceed through next middleware / policies / controllers
+        await next();
+      } catch (err) {
+        // Log comprehensive error details
+        console.error('=== Error Thrown by Strapi ===');
+        console.error('Status:', err.status || err.statusCode || 500);
+        console.error('Name:', err.name);
+        console.error('Message:', err.message);
+        if (err.details) console.error('Details:', err.details);
+        if (err.errors) console.error('Errors:', err.errors);
+        if (err.code) console.error('Code:', err.code);
+        if (typeof err.expose !== 'undefined') console.error('Expose:', err.expose);
+        if (err.headers) console.error('Headers:', err.headers);
+        // Inspect raw Error instance
+        console.error('⛔ Raw Error object:');
+        console.error(
+          util.inspect(err, { showHidden: true, depth: null, colors: true })
+        );
+        // Inspect response body that Strapi will send
+        console.error('🔍 ctx.response.body:');
+        console.error(
+          util.inspect(ctx.response.body, { showHidden: false, depth: null })
+        );
+        console.error('==============');
+        // Re-throw so Strapi can handle the response
+        throw err;
       }
 
-      // console.log("=== Response ===");
-      // console.log("Status:", ctx.response.status);
-      // console.log("================");
+      // After successful response
+      if (['POST', 'PUT', 'PATCH'].includes(ctx.request.method)) {
+        console.log('=== Request Body ===');
+        console.log('Parsed Body:', ctx.request.body);
+        console.log('Raw Body:', rawBody);
+        console.log('===================');
+      }
+
+      console.log('=== Response ===');
+      console.log('Status:', ctx.response.status);
+      console.log('Response Body:', util.inspect(ctx.response.body, { depth: null }));
+      console.log('==============');
     });
   },
 };

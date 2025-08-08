@@ -1036,18 +1036,13 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
-    team: Schema.Attribute.Relation<'manyToOne', 'api::team.team'> &
-      Schema.Attribute.SetPluginOptions<{
-        'users-permissions': {
-          visible: true;
-        };
-      }>;
+    team: Schema.Attribute.Relation<'manyToOne', 'api::team.team'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     username: Schema.Attribute.String &
       Schema.Attribute.Required &
-      Schema.Attribute.Unique &
+      Schema.Attribute.Configurable &
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;

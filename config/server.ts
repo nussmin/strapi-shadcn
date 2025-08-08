@@ -4,4 +4,8 @@ export default ({ env }) => ({
   app: {
     keys: env.array("APP_KEYS"),
   },
+  // tell Strapi to show debug / silly logs
+  logger: { config: { level: 'debug' }},
+  // emit errors up to Koa so you can catch full stack traces
+  emitErrors: true,
 });

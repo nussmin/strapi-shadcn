@@ -10,11 +10,31 @@ curl -i -X POST http://localhost:1337/api/auth/local \
       }' \
   -c cookiejar.txt
 
+curl -i -X POST http://localhost:1337/api/auth/local \
+  -H "Content-Type: application/json" \
+  -d '{
+        "identifier": "foobar",
+        "password": "Test1234"
+      }' \
+  -c cookiejar.txt
+
 cat cookiejar.txt
 
 # test auth status response
 curl -b cookiejar.txt http://localhost:1337/api/users/me | jq
 
+curl -i -X POST http://localhost:1337/api/auth/local \
+  -H "Content-Type: application/json" \
+  -d '{
+        "identifier": "foobar",
+        "password": "Test1234"
+      }' \
+  -c cookiejar.txt
+
+
+curl -X GET \
+  'http://localhost:1337/api/discussions' \
+  --cookie cookiejar.txt
 
 # Expected content. note the domain should only contain 'localhost or somewebsite.com'
 # Netscape HTTP Cookie File
@@ -29,7 +49,14 @@ curl -b cookiejar.txt http://localhost:1337/api/users/me | jq
 curl -i -X GET http://localhost:1337/api/users/me \
   -b cookiejar.txt \
   -H "Content-Type: application/json"
+
+
+curl -i -X 'GET' http://localhost:1337/api/users \
+  -b cookiejar.txt \
+  -H "Content-Type: application/json"
+
 ```
+
 
 # test registration api
 
@@ -43,7 +70,6 @@ curl -i -X POST http://localhost:1337/api/auth/local/register \
         "firstName": "Best",
         "lastName": "User",
         "password": "ABC@112358",
-        "teamId": null,
         "teamName": "Dream Team"
       }'
 
@@ -51,12 +77,11 @@ curl -i -X POST http://localhost:1337/api/auth/local/register \
 curl -i -X POST http://localhost:1337/api/auth/local/register \
   -H "Content-Type: application/json" \
   -d '{
-        "identifier": "best@gmail.com",
+        "email": "best@gmail.com",
         "firstName": "Best",
         "lastName": "User",
         "password": "ABC@112358",
         "teamId": "existing-team-uuid",
-        "teamName": null
       }'
 
 ```
@@ -65,7 +90,6 @@ curl -i -X POST http://localhost:1337/api/auth/local/register \
 # Get existing team 
 curl -s -G "http://localhost:1337/api/teams" \
   --data-urlencode 'fields[0]=name' \
-  --
   --data-urlencode 'pagination[pageSize]=100' | \
   jq '.data[] | {id: .id, name: .name}'
 

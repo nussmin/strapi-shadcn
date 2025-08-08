@@ -16,8 +16,8 @@
     "username": {
       "type": "string",
       "minLength": 6,
-      "unique": true,
-      "configurable": false,
+      "unique": false,
+      "configurable": true,
       "required": true
     },
     "email": {

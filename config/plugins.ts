@@ -1,18 +1,17 @@
 export default ({ env }) => ({
-  'users-permissions': {
+  "users-permissions": {
     config: {
       register: {
         // include all the params you want the /auth/local/register endpoint to accept:
         allowedFields: [
-          'username',
-          'email',
-          'password',
-          'firstName',
-          'lastName',
-          'businessRole',
-          'bio',
-          'team',
-          'teamName',      
+          "username",
+          "email",
+          "password",
+          "firstName",
+          "lastName",
+          "businessRole",
+          "bio",
+          "team",
         ],
       },
     },
@@ -36,11 +35,11 @@ export default ({ env }) => ({
   documentation: {
     enabled: true,
     config: {
-      restrictedAccess: true,
-      openapi: '3.0.0',
+      restrictedAccess: true, // optional: restrict access to authenticated users
+      openapi: "3.0.0",
       info: {
-        version: '1.0.0',
-        title: 'API news',
+        version: "1.0.0",
+        title: "API",
       },
     },
   },

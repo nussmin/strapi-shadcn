@@ -34,7 +34,30 @@ curl -i -X POST http://localhost:1337/api/auth/local \
 
 curl -X GET \
   'http://localhost:1337/api/discussions' \
-  --cookie cookiejar.txt
+  -b cookiejar.txt
+
+# note for the connect: whether it is an array or single object, depends on the relationship
+curl -X POST "http://localhost:1337/content-manager/collection-types/api::mask.mask" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU0ODg4NDk1LCJleHAiOjE3NTc0ODA0OTV9.YeF8mldNicZjRh7qReWQggYsiGKg1-KI8u59QeXWBa8" \
+  -d '{
+    "name": "my connect qmask",
+    "asset": {
+      "name": "whatever",
+      "age": "30",
+	  "gender": "male"	  
+    },
+    "user": "A",
+    "users_permissions_user": {
+      "connect": [
+        {
+          "documentId": "k86jwojo2jnev54sc7a3e24v"
+        }
+      ]
+    }
+  }'
+
+
 
 # Expected content. note the domain should only contain 'localhost or somewebsite.com'
 # Netscape HTTP Cookie File

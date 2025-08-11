@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "masks",
+  "info": {
+    "singularName": "mask",
+    "pluralName": "masks",
+    "displayName": "mask"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "asset": {
+      "type": "json"
+    },
+    "user": {
+      "type": "enumeration",
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ]
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "mask"
+    }
+  }
+}

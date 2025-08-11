@@ -36,7 +36,7 @@ curl -X GET \
   'http://localhost:1337/api/discussions' \
   -b cookiejar.txt
 
-# note for the connect: whether it is an array or single object, depends on the relationship
+# this is only valid thru the admin ui interface. it is thru RESTFUL api, you need make sure to modify the users-permissions role
 curl -X POST "http://localhost:1337/content-manager/collection-types/api::mask.mask" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU0ODg4NDk1LCJleHAiOjE3NTc0ODA0OTV9.YeF8mldNicZjRh7qReWQggYsiGKg1-KI8u59QeXWBa8" \
@@ -57,7 +57,34 @@ curl -X POST "http://localhost:1337/content-manager/collection-types/api::mask.m
     }
   }'
 
+# So in the User-permissions role settings, you only need to enable "Find" permission for the User entity, and that's enough to allow creating masks with user relations.
+# This tells us that:
 
+Strapi checks if you have read access (Find) to the related entity when creating relations
+You don't need write permissions (Update) on the user to create a relation TO the user
+FindOne isn't required either - just the general Find permission
+
+This makes sense from a security perspective:
+
+Find permission = "Can I see/reference these users?" ✅ (needed for relations)
+Update permission = "Can I modify user data?" ❌ (not needed just to reference)
+FindOne permission = "Can I get a specific user?" ❌ (not needed for creating relations)
+# Restful api 
+
+curl -X POST "http://localhost:1337/api/masks" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU0ODkxMjU1LCJleHAiOjE3NTc0ODMyNTV9.DsCMfx0fATpiZHmtdYogy4EqEuEKQxurLeIE_PWWMeA" \
+  -d '{
+    "data": {
+      "name": "api route with admin token",
+      "asset": {
+        "name": "whatever",
+        "age": "30",
+        "gender": "male"
+      },
+      "user": "A"
+    }
+  }'
 
 # Expected content. note the domain should only contain 'localhost or somewebsite.com'
 # Netscape HTTP Cookie File

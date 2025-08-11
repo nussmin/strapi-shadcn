@@ -25,6 +25,12 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"
+    },
+    "news": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::news.news",
+      "inversedBy": "comments"
     }
   }
 }

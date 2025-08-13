@@ -1,216 +1,199 @@
 // src/extensions/users-permissions/strapi-server.ts
+// Helper functions
+
+async function findOrCreateTeam(teamName: string) {
+  try {
+    // Check if team exists
+    let team = await strapi.db.query("api::team.team").findOne({
+      where: { name: teamName },
+    });
+
+    // Create if doesn't exist
+    if (!team) {
+      team = await strapi.db.query("api::team.team").create({
+        data: {
+          name: teamName,
+          publishedAt: new Date(),
+        },
+      });
+      strapi.log.info(`Created new team: ${teamName}`);
+    }
+
+    return team;
+  } catch (error) {
+    strapi.log.error(`Failed to handle team ${teamName}:`, error);
+    return null;
+  }
+}
+
+async function updateUserWithCustomFields(
+  userId: number,
+  fields: {
+    firstName: string;
+    lastName: string;
+    businessRole: string;
+    bio: string;
+    teamId: number | null;
+  }
+) {
+  try {
+    const updateData: any = {
+      firstName: fields.firstName,
+      lastName: fields.lastName,
+      businessRole: fields.businessRole,
+    };
+
+    if (fields.bio) updateData.bio = fields.bio;
+    if (fields.teamId) updateData.team = fields.teamId;
+
+    await strapi.db.query("plugin::users-permissions.user").update({
+      where: { id: userId },
+      data: updateData,
+    });
+
+    strapi.log.info(`Updated user ${userId} with custom fields`);
+  } catch (error) {
+    strapi.log.error(`Failed to update user ${userId}:`, error);
+    // Don't throw - user is already created, just missing custom fields
+  }
+}
+
+function formatUserResponse(user: any) {
+  return {
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    businessRole: user.businessRole,
+    bio: user.bio,
+    confirmed: user.confirmed,
+    blocked: user.blocked,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    ...(user.team && {
+      team: {
+        id: user.team.id,
+        name: user.team.name,
+      },
+    }),
+  };
+}
 
 export default (plugin) => {
   strapi.log.info("🔌 Users-permissions plugin extension loaded");
-  
-  // Extend user schema (keep your existing schema extensions)
-  plugin.contentTypes.user.schema = {
-    ...plugin.contentTypes.user.schema,
-    attributes: {
-      ...plugin.contentTypes.user.schema.attributes,
-      firstName: {
-        type: "string",
-        required: true,
-        minLength: 1,
-        maxLength: 50,
-      },
-      lastName: {
-        type: "string",
-        required: true,
-        minLength: 1,
-        maxLength: 50,
-      },
-      businessRole: {
-        type: "enumeration",
-        enum: ["ADMIN", "USER"],
-        default: "USER",
-        required: true,
-      },
-      bio: {
-        type: "text",
-        default: "",
-      },
-      team: {
-        type: "relation",
-        relation: "manyToOne",
-        target: "api::team.team",
-        inversedBy: "users"
-      }
+
+  // Extend user schema with custom fields
+  plugin.contentTypes.user.schema.attributes = {
+    ...plugin.contentTypes.user.schema.attributes,
+    firstName: {
+      type: "string",
+      required: true,
+      minLength: 1,
+      maxLength: 50,
+    },
+    lastName: {
+      type: "string",
+      required: true,
+      minLength: 1,
+      maxLength: 50,
+    },
+    businessRole: {
+      type: "enumeration",
+      enum: ["ADMIN", "USER"],
+      default: "USER",
+      required: true,
+    },
+    bio: {
+      type: "text",
+      default: "",
+    },
+    team: {
+      type: "relation",
+      relation: "manyToOne",
+      target: "api::team.team",
+      inversedBy: "users",
     },
   };
-  
-  // Override the auth controller factory
+
+  // Override the auth controller
   const originalAuthFactory = plugin.controllers.auth;
-  
+
   plugin.controllers.auth = (context) => {
-    console.log('🏭 Auth controller factory called');
     const controller = originalAuthFactory(context);
-    
-    // Save original register
     const originalRegister = controller.register;
-    
-    // Override register method
+
     controller.register = async (ctx) => {
-      console.log('\n========================================');
-      console.log('🎯 REGISTER ENDPOINT INTERCEPTED!');
-      console.log('========================================');
-      console.log('📅 Time:', new Date().toISOString());
-      console.log('📧 Email:', ctx.request.body?.email);
-      console.log('👤 Username:', ctx.request.body?.username);
-      console.log('🔑 Has Password:', !!ctx.request.body?.password);
-      console.log('📦 All fields:', Object.keys(ctx.request.body || {}));
-      console.log('========================================\n');
-      
       try {
-        // Extract custom fields
-        const { firstName, lastName, teamName, businessRole = 'USER', bio } = ctx.request.body;
-        
-        // Validate YOUR custom required fields
+        // 1. Extract and validate custom fields
+        const {
+          email,
+          username,
+          password,
+          firstName,
+          lastName,
+          teamName,
+          businessRole = "USER",
+          bio = "",
+        } = ctx.request.body;
+
         if (!firstName || !lastName) {
-          return ctx.badRequest('firstName and lastName are required');
+          return ctx.badRequest("firstName and lastName are required");
         }
-        
-        // Handle team creation
+
+        // 2. Create or find team if provided
         let teamId = null;
         if (teamName) {
-          try {
-            let team = await strapi.db.query('api::team.team').findOne({
-              where: { name: teamName }
-            });
-            
-            if (!team) {
-              console.log(`🏢 Creating new team: ${teamName}`);
-              team = await strapi.db.query('api::team.team').create({
-                data: { 
-                  name: teamName, 
-                  publishedAt: new Date() 
-                }
-              });
-              console.log(`✅ Team created with ID: ${team.id}, DocumentID: ${team.documentId}`);
-            } else {
-              console.log(`✅ Using existing team: ${team.name} (ID: ${team.id})`);
-            }
-            
-            // Store the team ID (not documentId) for the relation
-            teamId = team.id;
-          } catch (error) {
-            console.error('❌ Team handling failed:', error);
-            // Continue without team if it fails
-          }
+          const team = await findOrCreateTeam(teamName);
+          teamId = team?.id;
         }
-        
-        // Store original body
-        const originalBody = { ...ctx.request.body };
-        
-        // Prepare body for original register (only basic fields)
-        ctx.request.body = {
-          email: originalBody.email,
-          username: originalBody.username,
-          password: originalBody.password
-        };
-        
-        console.log('📞 Calling original register with basic fields...');
-        
-        // CRITICAL: Actually call the original register!
+
+        // 3. Register user with basic fields only
+        ctx.request.body = { email, username, password };
         await originalRegister.call(controller, ctx);
-        
-        console.log('✅ Original register completed');
-        console.log('Response status:', ctx.status);
-        
-        // If user was created successfully, update with custom fields
+
+        // 4. If registration successful, update user with custom fields
         if (ctx.status === 200 && ctx.body?.user?.id) {
-          const userId = ctx.body.user.id;
-          console.log(`📝 Updating user ${userId} with custom fields...`);
-          
-          try {
-            // Prepare update data with proper typing
-            interface UpdateData {
-              firstName: string;
-              lastName: string;
-              businessRole: string;
-              bio?: string;
-              team?: number;
-            }
-            
-            const updateData: UpdateData = {
-              firstName,
-              lastName,
-              businessRole
-            };
-            
-            // Add optional fields if provided
-            if (bio) updateData.bio = bio;
-            if (teamId) updateData.team = teamId; // Use the ID for the relation
-            
-            console.log('Update data:', updateData);
-            
-            // Update the user with custom fields
-            const updatedUser = await strapi.db.query('plugin::users-permissions.user').update({
-              where: { id: userId },
-              data: updateData,
-              populate: {
-                team: true,
-                role: true
-              }
+          await updateUserWithCustomFields(ctx.body.user.id, {
+            firstName,
+            lastName,
+            businessRole,
+            bio,
+            teamId,
+          });
+
+          // 5. Fetch and return complete user data
+          const completeUser = await strapi.db
+            .query("plugin::users-permissions.user")
+            .findOne({
+              where: { id: ctx.body.user.id },
+              populate: ["team"],
             });
-            
-            console.log('✅ User updated with custom fields');
-            
-            // Enhance the response with the updated user data
+
+          if (completeUser) {
+            // Preserve the original sanitized structure, just add the new fields
             ctx.body.user = {
-              ...ctx.body.user,
-              firstName: updatedUser.firstName,
-              lastName: updatedUser.lastName,
-              businessRole: updatedUser.businessRole,
-              bio: updatedUser.bio
+              ...ctx.body.user, // Keep original sanitized fields
+              firstName: completeUser.firstName,
+              lastName: completeUser.lastName,
+              businessRole: completeUser.businessRole,
+              bio: completeUser.bio,
+              team: completeUser.team || null
             };
-            
-            // Add team info if it exists
-            if (updatedUser.team) {
-              ctx.body.user.team = {
-                id: updatedUser.team.id,
-                documentId: updatedUser.team.documentId,
-                name: updatedUser.team.name
-              };
-              console.log(`✅ User linked to team: ${updatedUser.team.name}`);
-            }
-            
-          } catch (updateError) {
-            console.error('⚠️ Failed to update user with custom fields:', updateError);
-            // User is created but without custom fields - registration still successful
+            // ctx.body.user = formatUserResponse(completeUser); customised response
           }
         }
-        
-        // Log final response
-        console.log('\n📤 Final Response:');
-        console.log('  - Status:', ctx.status);
-        console.log('  - Has JWT:', !!ctx.body?.jwt);
-        console.log('  - User ID:', ctx.body?.user?.id);
-        console.log('  - User Email:', ctx.body?.user?.email);
-        console.log('  - Team:', ctx.body?.user?.team?.name || 'No team');
-        console.log('========================================\n');
-        
       } catch (error) {
-        console.error('❌ Error in custom register:', error);
-        console.error('Stack:', error.stack);
-        
-        // If the original register hasn't set a response, set an error
+        strapi.log.error("Registration error:", error);
         if (!ctx.body) {
-          ctx.status = 400;
-          ctx.body = {
-            error: {
-              message: error.message || 'Registration failed',
-              name: 'ApplicationError'
-            }
-          };
+          ctx.badRequest("Registration failed: " + error.message);
         }
       }
     };
-    
+
     return controller;
   };
-  
+
   strapi.log.info("✅ Extension setup complete");
-  
   return plugin;
 };

@@ -12,6 +12,7 @@ export default ({ env }) => ({
           "businessRole",
           "bio",
           "team",
+          "teamName"
         ],
       },
     },

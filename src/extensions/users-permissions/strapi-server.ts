@@ -81,7 +81,7 @@ function formatUserResponse(user: any) {
 }
 
 export default (plugin) => {
-  strapi.log.info("🔌 Users-permissions plugin extension loaded");
+  strapi.log.info("Users-permissions plugin extension loaded");
 
   // Extend user schema with custom fields
   plugin.contentTypes.user.schema.attributes = {

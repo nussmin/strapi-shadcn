@@ -113,6 +113,27 @@ npx strapi content-types:list
 
 ```
 
+## isOwner policy 
+**By default, all strapi api do not have the isOwnerpolicy** - meaning a get call with an authenticated user will find all the in the database even those that are not created by the owner. 
+
+This will cause a problem for content restricted policy where you want to sandbox content to the userId and explicitly allowed by the user. So you need to implement your customised isOwner policy and isShared policy expicitly. restricting to FindOne do  nto solve the problem. Super important.
+
+
+Guide to implement isOwner policy 
+https://docs.strapi.io/cms/backend-customization/middlewares#restricting-content-access-with-an-is-owner-policy
+
+https://docs.strapi.io/cms/backend-customization#interactive-diagram
+
+
+Performance Tips
+
+Always filter at the database level, not in JavaScript
+Use indexes on foreign keys (Strapi usually does this automatically)
+Use select/populate sparingly - only fetch needed fields
+For one-to-one, consider using the user ID as the primary key
+Monitor slow queries with database query logs
+
+The key insight: The middleware isn't searching through all records - it's using indexed database queries that are very efficient. The real optimization is ensuring filters are applied at the database level, not in application code!
 
 ## List all routes in Strapi
 `npm run strapi routes:list`

@@ -58,6 +58,7 @@ async function updateUserWithCustomFields(
   }
 }
 
+/* Deprecated */
 function formatUserResponse(user: any) {
   return {
     id: user.id,

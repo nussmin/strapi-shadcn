@@ -30,15 +30,14 @@ export default {
       //   return await next();
       // }
 
-      // For GET requests or requests that already have been parsed,
-      // we don't need to capture raw body
+      // Capture raw request body
       let rawBody = '';
-      
-      // Note: By the time this middleware runs, Koa/Strapi has likely
-      // already parsed the body. If you need the raw body, you need to
-      // position this middleware BEFORE body parsing middleware.
-      // For now, let's just use what's already parsed:
-      
+      if (['POST', 'PUT', 'PATCH'].includes(ctx.request.method)) {
+        ctx.req.on('data', (chunk) => {
+          rawBody += chunk.toString();
+        });
+      }
+
       try {
         // Proceed through next middleware / policies / controllers
         await next();
@@ -68,10 +67,11 @@ export default {
         throw err;
       }
 
-      // After successful response - log request and response
+      // After successful response
       if (['POST', 'PUT', 'PATCH'].includes(ctx.request.method)) {
         console.log('=== Request Body ===');
         console.log('Parsed Body:', ctx.request.body);
+        console.log('Raw Body:', rawBody);
         console.log('===================');
       }
 

@@ -518,8 +518,8 @@ export interface ApiNoteNote extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    dbfile: Schema.Attribute.JSON;
-    description: Schema.Attribute.Text;
+    dbfile: Schema.Attribute.JSON & Schema.Attribute.Required;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::note.note'> &
       Schema.Attribute.Private;

@@ -28,16 +28,9 @@ export default (_config, { strapi }: { strapi: Core.Strapi }) => {
     const method = ctx.request.method;
     const entryId = ctx.params?.documentId ?? ctx.params?.id;
 
-    // strapi.log.info(`params: ${JSON.stringify(ctx.params)}`);
-
     if (!user) {
-      return ctx.unauthorized("You must be logged in.");
+      return ctx.unauthorized("You must be logged in."); // 401 - correct!
     }
-
-    // Optional: let admins do anything
-    // if (user.businessRole === 'ADMIN') {
-    //   return next();
-    // }
 
     switch (method) {
       case 'GET': {
@@ -68,7 +61,8 @@ export default (_config, { strapi }: { strapi: Core.Strapi }) => {
               : entry.users_permissions_user;
 
           if (!ownerId || ownerId !== user.id) {
-            return ctx.unauthorized("This action is unauthorized.");
+            // CHANGE: Use 404 to prevent redirect in frontend instead of unauthorized (401)
+            return ctx.notFound("Note not found.");
           }
         }
         break;
@@ -121,7 +115,8 @@ export default (_config, { strapi }: { strapi: Core.Strapi }) => {
             : entryToModify.users_permissions_user;
 
         if (!ownerId || ownerId !== user.id) {
-          return ctx.unauthorized("This action is unauthorized.");
+          // CHANGE: Use forbidden (403) instead of unauthorized (401)
+          return ctx.notFound("Note not found.");
         }
 
         // Prevent changing the owner on updates

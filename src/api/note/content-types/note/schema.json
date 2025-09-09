@@ -12,10 +12,12 @@
   "pluginOptions": {},
   "attributes": {
     "description": {
-      "type": "text"
+      "type": "text",
+      "required": true
     },
     "dbfile": {
-      "type": "json"
+      "type": "json",
+      "required": true
     },
     "users_permissions_user": {
       "type": "relation",

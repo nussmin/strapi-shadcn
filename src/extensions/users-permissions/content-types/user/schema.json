@@ -113,6 +113,12 @@
       "relation": "oneToOne",
       "target": "api::note.note",
       "inversedBy": "users_permissions_user"
+    },
+    "dbsync": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::dbsync.dbsync",
+      "inversedBy": "users_permissions_user"
     }
   }
 }

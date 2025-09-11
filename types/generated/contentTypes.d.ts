@@ -410,6 +410,39 @@ export interface ApiCommentComment extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiDbsyncDbsync extends Struct.CollectionTypeSchema {
+  collectionName: 'dbsyncs';
+  info: {
+    displayName: 'dbsync';
+    pluralName: 'dbsyncs';
+    singularName: 'dbsync';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    dbfile: Schema.Attribute.JSON & Schema.Attribute.Required;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::dbsync.dbsync'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users_permissions_user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiDiscussionDiscussion extends Struct.CollectionTypeSchema {
   collectionName: 'discussions';
   info: {
@@ -1037,6 +1070,7 @@ export interface PluginUsersPermissionsUser
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    dbsync: Schema.Attribute.Relation<'oneToOne', 'api::dbsync.dbsync'>;
     discussions: Schema.Attribute.Relation<
       'oneToMany',
       'api::discussion.discussion'
@@ -1102,6 +1136,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::comment.comment': ApiCommentComment;
+      'api::dbsync.dbsync': ApiDbsyncDbsync;
       'api::discussion.discussion': ApiDiscussionDiscussion;
       'api::mask.mask': ApiMaskMask;
       'api::news.news': ApiNewsNews;

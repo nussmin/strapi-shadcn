@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "dbsyncs",
+  "info": {
+    "singularName": "dbsync",
+    "pluralName": "dbsyncs",
+    "displayName": "dbsync"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "dbfile": {
+      "type": "json",
+      "required": true
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "dbsync"
+    }
+  }
+}
